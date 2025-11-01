@@ -1,0 +1,14 @@
+name: Skelocity
+version: '1.0'
+main: me.tylad.skelocity.Skelocity
+api-version: '1.21'
+prefix: Skelocity
+authors: [ Tylad ]
+description: A regularly updated Skript addon bundled with functionality around Minecraft proxies for server networks using Skript
+depend:
+  - Skript
+
+commands:
+  skelocity:
+    description: Main plugin command
+    permission: skelocity.use
