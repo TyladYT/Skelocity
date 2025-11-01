@@ -34,7 +34,7 @@ public class SkelocityCommand implements CommandExecutor, TabExecutor {
             String option = args[0];
 
             if (Objects.equals(option, "docs")){
-                player.sendMessage(MiniMessage.miniMessage().deserialize("<#00A7FF><bold>Skelocity</bold> <gray>› <#488aff><click:open_url:'https://skripthub.net/docs/'>ℹ Click here to view the Skelocity documentation\n<gray>→ (https://skripthub.net/docs/)</click>"));
+                player.sendMessage(MiniMessage.miniMessage().deserialize("<#00A7FF><bold>Skelocity</bold> <gray>› <#488aff><click:open_url:'https://skripthub.net/docs/?addon=Skelocity'>ℹ Click here to view the Skelocity documentation\n<gray>→ (https://skripthub.net/docs/?addon=Skelocity)</click>"));
             } else if (Objects.equals(option, "info")){
                 player.sendMessage(MiniMessage.miniMessage().deserialize("<#00A7FF><bold>Skelocity</bold> <gray>› <#488aff>" + Skelocity.getInstance().getPluginMeta().getDescription()));
             } else if (Objects.equals(option, "compatibility")) {
