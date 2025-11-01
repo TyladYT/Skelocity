@@ -40,7 +40,7 @@ public class SkelocityCommand implements CommandExecutor, TabExecutor {
             } else if (Objects.equals(option, "compatibility")) {
                 player.sendMessage(MiniMessage.miniMessage().deserialize("<#00A7FF><bold>Skelocity</bold> <gray>› <#488aff>ℹ Compatibility Notes\n\n<#46AFD4>→ All features have been tested and work on Velocity server <reset> <reset> <reset> <#46AFD4>software, Skelocity should also work for Bungeecord.\n\n<#46AFD4>→ Notice something odd with Skelocity? Report it <click:open_url:'https://discord.gg/khpfQKhxrd'><#89CFF0><hover:show_text:'<#46AFD4>Click here to join our discord and report an issue with Skelocity.\nAny bug reports are genuinely appreciated :)'>here<#46AFD4>! ❤\n<gray>→ (https://discord.gg/khpfQKhxrd)</hover></click>"));
             } else if (Objects.equals(option, "contributors")) {
-                player.sendMessage(MiniMessage.miniMessage().deserialize("<#00A7FF><bold>Skelocity</bold> <gray>› <#488aff>ℹ Contribution Credits\n\n<#46AFD4>→ DJDisaster"));
+                player.sendMessage(MiniMessage.miniMessage().deserialize("<#00A7FF><bold>Skelocity</bold> <gray>› <#488aff>ℹ Contribution Credits\n\n<#46AFD4>→ Tylad (creator)\n→ DJDisaster"));
             } else {
                 player.sendMessage(MiniMessage.miniMessage().deserialize("<#00A7FF><bold>Skelocity</bold> <gray>› <#FFA6A6>That argument doesn't exist! Choose another..."));
             }
