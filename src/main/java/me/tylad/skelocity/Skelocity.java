@@ -60,7 +60,6 @@ public class Skelocity extends JavaPlugin implements PluginMessageListener {
 
         try {
             addon.loadClasses("me.tylad.skelocity", "elements");
-            addon.loadClasses("me.tylad.skelocity", "effects");
         } catch (IOException error) {
             error.printStackTrace();
         }
@@ -108,7 +107,7 @@ public class Skelocity extends JavaPlugin implements PluginMessageListener {
             } else if (subChannel.equals("PlayerList")) {
                 String server = in.readUTF();
                 String[] players = in.readUTF().split(", ");
-                Skelocity.cachePlayerList(server, players);
+                playerLists.put(server, players);
             }
 
         } catch (IOException e) {
@@ -135,10 +134,6 @@ public class Skelocity extends JavaPlugin implements PluginMessageListener {
 
     public static String getPlayerServer(String playerName) {
         return lastKnownServers.getOrDefault(playerName, "Unknown");
-    }
-
-    public static void cachePlayerList(String server, String[] players) {
-        playerLists.put(server, players);
     }
 
     public static String[] getPlayerList(String server) {

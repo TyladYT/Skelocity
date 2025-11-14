@@ -7,6 +7,7 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import me.tylad.skelocity.utils.TextUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -21,13 +22,13 @@ public class EffectKickPlayer extends Effect {
         Skript.registerEffect(EffectKickPlayer.class, "(proxy|velocity) kick %player% [(with reason|due to) %-string%]");
     }
 
-    private Expression<Player> playerExpr;
+    private Expression<OfflinePlayer> playerExpr;
     private Expression<String> reason;
 
     @SuppressWarnings("unchecked")
     @Override
     public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean isDelayed, ParseResult parser) {
-        this.playerExpr = (Expression<Player>) expressions[0];
+        this.playerExpr = (Expression<OfflinePlayer>) expressions[0];
         this.reason = (Expression<String>) expressions[1];
         return true;
     }
@@ -39,7 +40,7 @@ public class EffectKickPlayer extends Effect {
 
     @Override
     protected void execute(Event event) {
-        Player target = playerExpr.getSingle(event);
+        Player target = playerExpr.getSingle(event).getPlayer();
         String reasonMsg = (reason != null && reason.getSingle(event) != null) ? reason.getSingle(event) : "No reason specified";
 
         if (target == null || Bukkit.getOnlinePlayers().isEmpty()) return;

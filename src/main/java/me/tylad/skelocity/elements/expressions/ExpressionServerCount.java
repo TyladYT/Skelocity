@@ -61,9 +61,14 @@ public class ExpressionServerCount extends SimpleExpression<Number> {
             DataOutputStream out = new DataOutputStream(bytes);
             out.writeUTF("PlayerCount");
             out.writeUTF(targetServer);
+
+            Thread.sleep(1);
+
             sender.sendPluginMessage(Skelocity.getInstance(), "BungeeCord", bytes.toByteArray());
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
         return new Number[]{Skelocity.getServerCount(targetServer)};
