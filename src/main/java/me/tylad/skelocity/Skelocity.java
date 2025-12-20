@@ -1,7 +1,6 @@
 package me.tylad.skelocity;
 
 import me.tylad.skelocity.commands.SkelocityCommand;
-import me.tylad.skelocity.elements.expressions.ExpressionFindPlayer;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -25,9 +24,12 @@ public class Skelocity extends JavaPlugin implements PluginMessageListener {
     private static final Map<String, Integer> serverCounts = new ConcurrentHashMap<>();
     private static final Map<String, String> lastKnownServers = new ConcurrentHashMap<>();
     private static final Map<String, String[]> playerLists = new ConcurrentHashMap<>();
-    private static String playerServer;
+    private static final Map<String, String> lastKnownIPs = new ConcurrentHashMap<>();
     private static int totalProxyCount = 0;
     private static Skelocity instance;
+    private static ProxyRequestService proxyRequestService;
+    private static String[] serverList = new String[0];
+    private static String lastUUIDOther;
 
     private File file;
 
@@ -64,6 +66,7 @@ public class Skelocity extends JavaPlugin implements PluginMessageListener {
             error.printStackTrace();
         }
 
+        proxyRequestService = new ProxyRequestService();
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
 
@@ -83,37 +86,65 @@ public class Skelocity extends JavaPlugin implements PluginMessageListener {
         if (!channel.equals("BungeeCord")) return;
 
         try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(message))) {
-            String subChannel = in.readUTF();
+            String sub = in.readUTF();
+            String key = null;
 
-            if (subChannel.equals("PlayerCount")) {
-                String serverName = in.readUTF();
+            if (sub.equals("PlayerCount")) {
+                String server = in.readUTF();
                 int count = in.readInt();
-                if (serverName.equalsIgnoreCase("ALL")) {
+
+                if (server.equalsIgnoreCase("ALL")) {
                     totalProxyCount = count;
                 } else {
-                    serverCounts.put(serverName.toLowerCase(), count);
+                    serverCounts.put(server.toLowerCase(), count);
                 }
 
-            } else if (subChannel.equals("GetPlayerServer")) {
-                String userName = in.readUTF();
-                String serverName = in.readUTF();
+                key = "PlayerCount:" + server.toLowerCase();
 
-                Skelocity.setPlayerServer(userName, serverName);
+            } else if (sub.equals("GetServer")) {
+                String server = in.readUTF();
+                lastKnownServers.put(player.getName(), server);
+                key = "GetServer:" + player.getName();
 
-                ExpressionFindPlayer.handleServerResponse(userName, serverName);
-            } else if (subChannel.equals("GetServer")) {
-                String serverName = in.readUTF();
-                ExpressionFindPlayer.handleServerResponse(player.getName(), serverName);
-            } else if (subChannel.equals("PlayerList")) {
+            } else if (sub.equals("GetPlayerServer")) {
+                String username = in.readUTF();
+                String server = in.readUTF();
+                lastKnownServers.put(username, server);
+                key = "GetServer:" + username;
+
+            } else if (sub.equals("PlayerList")) {
                 String server = in.readUTF();
                 String[] players = in.readUTF().split(", ");
-                playerLists.put(server, players);
+                playerLists.put(server.toLowerCase(), players);
+                key = "PlayerList:" + server.toLowerCase();
+            } else if (sub.equals("GetServers")) {
+                String[] servers = in.readUTF().split(", ");
+                serverList = servers;
+                key = "GetServers";
+            } else if (sub.equals("IPOther")) {
+                Bukkit.getLogger().info("Received IPOther response");
+                String name = in.readUTF();
+                String ip = in.readUTF();
+                Bukkit.getLogger().info("IPOther: " + name + " -> " + ip);
+                lastKnownIPs.put(name.toLowerCase(), ip);
+                key = "IPOther:" + name.toLowerCase();
+            }
+            else if (sub.equals("UUIDOther")) {
+                lastUUIDOther = in.readUTF();
+                key = "UUIDOther";
+            }
+
+
+
+            if (key != null) {
+                proxyRequestService.complete(key);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
 
     public static int getServerCount(String serverName) {
@@ -139,5 +170,22 @@ public class Skelocity extends JavaPlugin implements PluginMessageListener {
     public static String[] getPlayerList(String server) {
         return playerLists.getOrDefault(server, new String[0]);
     }
+
+    public static ProxyRequestService getProxyRequestService() {
+        return proxyRequestService;
+    }
+
+    public static String[] getServers() {
+        return serverList;
+    }
+
+    public static String getPlayerIP(String name) {
+        return lastKnownIPs.get(name.toLowerCase());
+    }
+
+    public static String getLastUUIDOther() {
+        return lastUUIDOther;
+    }
+
 
 }
